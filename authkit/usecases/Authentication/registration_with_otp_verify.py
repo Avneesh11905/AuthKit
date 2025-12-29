@@ -1,0 +1,49 @@
+from authkit.ports.intents.registration_intent_store import RegistrationIntentStore
+from authkit.ports.otp.otp_store import OTPStore , OTPPurpose
+from authkit.ports.user_repo import UserRepository
+from authkit.exceptions.auth import InvalidOTPError 
+from authkit.domain import User
+from typing import Any
+from uuid import UUID , uuid4
+
+class VerifyRegistrationWithOTPUseCase:
+    """
+    Use case to verify registration OTP and create the user.
+    """
+    def __init__(self, 
+                 user_repo: UserRepository,
+                 intent_store: RegistrationIntentStore,
+                 otp_store: OTPStore):
+        self.intent_store = intent_store
+        self.otp_store = otp_store
+        self.user_repo = user_repo
+    
+    async def execute(self, verification_token: UUID , code: str) -> User:
+        """
+        Verifies the OTP and creates the new user account.
+        
+        Args:
+            verification_token: The intent token from the start flow.
+            code: The OTP provided by the user.
+            
+        Returns:
+            The newly created User object.
+            
+        Raises:
+            InvalidOTPError: If OTP or intent is invalid.
+        """
+        intent = await self.intent_store.get(key=verification_token)
+        if intent is None:
+            raise InvalidOTPError("Intent not found")
+        valid = await self.otp_store.verify(token=verification_token, code=code, purpose=OTPPurpose.REGISTRATION)
+        if not valid:
+            raise InvalidOTPError("Invalid OTP")
+        await self.intent_store.delete(key=verification_token)
+        user = User(id=uuid4(),
+                    identifier=intent.identifier,
+                    password_hash=intent.password_hash,
+                    credentials_version=intent.credentials_version)
+        user = await self.user_repo.add(user=user)
+        return user
+        
+        
