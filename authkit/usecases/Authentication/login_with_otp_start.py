@@ -1,11 +1,11 @@
 from authkit.ports.otp.otp_manager import OTPManager
 from authkit.ports.otp.otp_store import OTPStore
-from authkit.ports.user_repo import UserRepository
+from authkit.ports.user_repo_cqrs import UserReaderRepository
 from authkit.ports.passwd_manager import PasswordManager
 from authkit.ports.intents.user_id_intent_store import  UserIDIntentStore
 from authkit.exceptions.auth import InvalidCredentialsError 
 from authkit.domain import OTPPurpose
-from uuid import uuid4 , UUID
+from uuid import UUID
 
 
 class StartLoginWithOTPUseCase:
@@ -14,13 +14,13 @@ class StartLoginWithOTPUseCase:
     """
     def __init__(
         self,
-        user_repo: UserRepository,
+        user_reader_repo: UserReaderRepository,
         password_manager: PasswordManager,
         intent_store: UserIDIntentStore,
         otp_store: OTPStore,
         otp_manager: OTPManager,
     ):
-        self.user_repo = user_repo
+        self.user_reader_repo = user_reader_repo
         self.password_manager = password_manager
         self.otp_store = otp_store
         self.otp_manager = otp_manager
@@ -40,7 +40,7 @@ class StartLoginWithOTPUseCase:
         Raises:
             InvalidCredentialsError: If credentials are invalid.
         """
-        user = await self.user_repo.get_by_identifier(identifier=identifier)
+        user = await self.user_reader_repo.get_by_identifier(identifier=identifier)
         if not user:
             raise InvalidCredentialsError("User not found")
         if not await self.password_manager.verify(password=password, 

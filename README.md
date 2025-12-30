@@ -4,7 +4,10 @@ A robust, Clean Architecture-based authentication library for Python. AuthKit is
 
 ## Features
 
-- **Clean Architecture Design**: Distinct separation of concerns with `Use Cases`, `Domain` entities, and `Ports` (interfaces).
+- **Architectural Excellence**:
+    - **Clean Architecture**: Domain-centric design with strict dependency rules.
+    - **Flexible Persistence**: Choose between **Unified Repository** (Simpler) or **CQRS** (Scalable) patterns depending on your needs.
+    - **Technology Independent**: Framework-agnostic core (use with FastAPI, Flask, Django, etc.) and database-agnostic persistence (SQL, NoSQL, In-Memory).
 - **Core Authentication**:
     - User Registration
     - Login (Username/Password)
@@ -45,47 +48,58 @@ You can install the package locally:
 pip install .
 ```
 
-## Usage
+## Quick Start
 
-AuthKit relies on Dependency Injection. You must implement the interfaces defined in `authkit.ports` (Adapters) and inject them into the Use Cases.
+The fastest way to understand AuthKit is to run the self-contained example. It implements standard "Zero-Dependency" in-memory adapters to demonstrate the full Registration flow.
 
-### 1. Implement Ports
+**[View the Quick Start Script](examples/quickstart.py)**
 
-Create adapters for your specific infrastructure (e.g., SQLalchemy, Redis, JWT, Argon2).
-
-```python
-# Example Adapters (Not included in library)
-class PostgresRepo(UserRepository):
-    ...
-
-class JWTService(TokenService):
-    ...
+To run it:
+```bash
+python examples/quickstart.py
 ```
 
-### 2. Initialize Use Case
+## Integrating into Your Project
+
+To use AuthKit in production, you must implement the Core Ports (Interfaces) using your technology stack (e.g., SQLAlchemy, Redis, Argon2).
+
+### 1. Implement Core Ports
+
+You can choose between a **Unified** approach (Simpler) or **CQRS** (Advanced).
+
+**Option A: Unified Repository (Recommended for most apps)**
+Implement `UserRepository` which combines read and write operations.
+
+| Interface | Responsibility | Example Implementation |
+|-----------|----------------|------------------------|
+| `UserRepository` | Handles all user persistence (Read & Write). | `Select/Add/Update(User)` |
+| `PasswordManager` | Hashing and verification logic. | `passlib` or `argon2-cffi` wrapper. |
+| `TokenService` | Token generation and validation. | `PyJWT` wrapper for HS256/RS256. |
+
+**Option B: CQRS (For high scalability)**
+Implement separate `UserReaderRepository` and `UserWriterRepository` interfaces if you need to split read/write models.
+
+### 2. Dependency Injection
+
+Inject your production adapters into the Use Cases:
 
 ```python
-import asyncio
-from authkit.usecases import LoginUseCase
+# Setup your adapters
+user_repo = PostgresUserRepo() # Implements UserRepository
+password_manager = Argon2PasswordManager()
+token_service = JwtTokenService()
 
-async def main():
-    # Setup dependencies
-    user_repo = PostgresRepo(...)
-    token_service = JWTService(...)
-    password_manager = Argon2Manager(...)
+# Initialize Use Case
+# Note: For Unified Repos, inject the SAME instance for both reader and writer
+login_uc = LoginCQRSUseCase(
+    user_reader=user_repo,
+    user_writer=user_repo,
+    password_manager=password_manager,
+    token_service=token_service
+)
 
-    # Initialize Use Case
-    login_uc = LoginUseCase(user_repo, password_manager, token_service)
-
-    # Execute
-    try:
-        token = await login_uc.execute("user@example.com", "securePassword123!")
-        print(f"Login successful! Token: {token.token}")
-    except Exception as e:
-        print(f"Login failed: {e}")
-
-if __name__ == "__main__":
-    asyncio.run(main())
+# Execute
+token = await login_uc.execute("user@example.com", "password")
 ```
 
 ## Testing
@@ -99,8 +113,17 @@ To run the tests:
 pip install pytest pytest-asyncio
 
 # Run tests
+# Run tests
 pytest
 ```
+
+### Testing Strategy
+
+The tests are designed to be **Expectation-Based** and **Isolated**:
+- **Expectation-Based**: Tests verify the behavioral contract of the Use Cases (Inputs -> Outputs/Side Effects) rather than internal implementation details.
+- **Dependency Injection**: We use `Fake` implementations of ports (Repositories, Stores) injected into the Use Cases.
+- **Isolation**: Each test runs with a fresh, isolated state (new in-memory stores) to prevent leakage and ensure reliability.
+
 
 ## License
 

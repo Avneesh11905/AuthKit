@@ -1,7 +1,7 @@
 from authkit.ports.intents.registration_intent_store import RegistrationIntentStore
 from authkit.ports.otp.otp_store import OTPStore , OTPPurpose
 from authkit.ports.otp.otp_manager import OTPManager
-from authkit.ports.user_repo import UserRepository
+from authkit.ports.user_repo_cqrs import UserReaderRepository
 from authkit.ports.passwd_manager import PasswordManager
 from authkit.exceptions.auth import ConflictError
 from authkit.domain import  RegistrationIntent
@@ -12,12 +12,12 @@ class StartRegistrationWithOTPUseCase:
     Use case to initiate registration with OTP verification.
     """
     def __init__(self, 
-                 user_repo: UserRepository,
+                 user_reader: UserReaderRepository,
                  password_store: PasswordManager,
                  intent_store: RegistrationIntentStore,
                  otp_store: OTPStore,
                  otp_manager: OTPManager):
-        self.user_repo = user_repo
+        self.user_reader = user_reader
         self.password_store = password_store
         self.intent_store = intent_store
         self.otp_store = otp_store
@@ -38,7 +38,7 @@ class StartRegistrationWithOTPUseCase:
         Raises:
             ConflictError: If the user already exists.
         """
-        if await self.user_repo.get_by_identifier(identifier=identifier):
+        if await self.user_reader.get_by_identifier(identifier=identifier):
             raise ConflictError("User already exists")
         hashed_password = await self.password_store.hash(password=password)
         intent = RegistrationIntent(identifier=identifier,

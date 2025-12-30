@@ -6,6 +6,8 @@ from tests.fakes.intents.user_id_intent_store import FakeUserIDIntentStore
 from tests.fakes.intents.user_id_intent_store import FakeUserIDIntentStore
 from tests.fakes.intents.registration_intent_store import FakeRegistrationIntentStore
 from tests.fakes.user_repo import FakeUserRepository
+from tests.fakes.user_repo_cqrs.user_reader_repo import FakeUserReaderRepository
+from tests.fakes.user_repo_cqrs.user_writer_repo import FakeUserWriterRepository
 from typing import Any , Callable
 
 class FakeContainer:
@@ -31,6 +33,8 @@ class FakeContainer:
         self.singletons = {}
         self.services = {}
 
+from tests.fakes.user_repo_cqrs.user_store import FakeUserStore
+
 def load():
     container = FakeContainer()
     container.register("password_manager", FakePasswordManager)
@@ -40,4 +44,13 @@ def load():
     container.register("otp_store", FakeOTPStore)
     container.register("otp_manager", FakeOTPManager)
     container.register("user_repo", FakeUserRepository)
+    
+    # Store isolation for CQRS repos
+    # Create a fresh store for this container instance
+    user_store = FakeUserStore()
+    
+    # Use lambdas to inject the *same* store instance into both repos
+    container.register("user_reader", lambda: FakeUserReaderRepository(user_store))
+    container.register("user_writer", lambda: FakeUserWriterRepository(user_store))
+    
     return container

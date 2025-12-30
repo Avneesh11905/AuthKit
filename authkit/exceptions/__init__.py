@@ -1,3 +1,6 @@
+"""
+Exposes the exceptions used within the AuthKit module.
+"""
 from .auth import (
     InvalidCredentialsError,
     InvalidOTPError,

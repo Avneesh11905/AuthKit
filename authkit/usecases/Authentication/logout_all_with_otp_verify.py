@@ -1,4 +1,4 @@
-from authkit.ports.user_repo import UserRepository
+from authkit.ports.user_repo_cqrs import UserWriterRepository
 from authkit.ports.token_service import TokenService
 from authkit.ports.otp.otp_store import OTPStore    
 from authkit.ports.intents.user_id_intent_store import UserIDIntentStore 
@@ -11,12 +11,12 @@ class VerifyLogoutAllWithOTPUseCase:
     Use case to verify OTP and execute global logout.
     """
     def __init__(self,
-                 user_repo: UserRepository,
+                 user_writer: UserWriterRepository,
                  intent_store: UserIDIntentStore,
                  token_service: TokenService,
                  otp_store: OTPStore,
                  ):
-        self.user_repo = user_repo
+        self.user_writer = user_writer
         self.intent_store = intent_store
         self.token_service = token_service
         self.otp_store = otp_store
@@ -42,4 +42,4 @@ class VerifyLogoutAllWithOTPUseCase:
             raise InvalidOTPError("Invalid OTP")
         await self.intent_store.delete(key=logout_token)
         await self.token_service.revoke_all(user_id=intent)
-        await self.user_repo.increment_credentials_version(user_id=intent)
+        await self.user_writer.increment_credentials_version(user_id=intent)

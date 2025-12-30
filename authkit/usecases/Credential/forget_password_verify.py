@@ -1,4 +1,4 @@
-from authkit.ports.user_repo import UserRepository
+from authkit.ports.user_repo_cqrs import UserWriterRepository
 from authkit.ports.token_service import TokenService
 from authkit.ports.otp.otp_store import OTPStore    
 from authkit.ports.otp.otp_manager import OTPManager
@@ -13,13 +13,13 @@ class VerifyForgetPasswordUseCase:
     Use case to complete the password recovery process.
     """
     def __init__(self,
-                 user_repo: UserRepository,
+                 user_writer: UserWriterRepository,
                  token_service: TokenService,
                  password_manager: PasswordManager,
                  intent_store: UserIDIntentStore,
                  otp_store: OTPStore,
                  otp_manager: OTPManager):
-        self.user_repo = user_repo
+        self.user_writer = user_writer
         self.token_service = token_service
         self.otp_store = otp_store
         self.otp_manager = otp_manager
@@ -48,6 +48,6 @@ class VerifyForgetPasswordUseCase:
             raise InvalidOTPError("Invalid OTP")
         await self.intent_store.delete(key=forget_token)
         await self.token_service.revoke_all(user_id=intent)
-        await self.user_repo.increment_credentials_version(user_id=intent)
+        await self.user_writer.increment_credentials_version(user_id=intent)
         hashed_password = await self.password_manager.hash(password=new_password)
-        await self.user_repo.change_password(user_id=intent, new_password_hash=hashed_password)
+        await self.user_writer.change_password(user_id=intent, new_password_hash=hashed_password)

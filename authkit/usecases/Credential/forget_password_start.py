@@ -1,4 +1,4 @@
-from authkit.ports.user_repo import UserRepository
+from authkit.ports.user_repo_cqrs import UserReaderRepository
 from authkit.ports.token_service import TokenService
 from authkit.ports.otp.otp_store import OTPStore    
 from authkit.ports.otp.otp_manager import OTPManager
@@ -12,12 +12,12 @@ class StartForgetPasswordUseCase:
     Use case to initiate the password recovery process.
     """
     def __init__(self,
-                 user_repo: UserRepository,
+                 user_reader: UserReaderRepository,
                  token_service: TokenService,
                  otp_store: OTPStore,
                  otp_manager: OTPManager,
                  intent_store: UserIDIntentStore):
-        self.user_repo = user_repo
+        self.user_reader = user_reader
         self.token_service = token_service
         self.otp_store = otp_store
         self.otp_manager = otp_manager
@@ -38,7 +38,7 @@ class StartForgetPasswordUseCase:
         Raises:
             NotFoundError: If the user does not exist.
         """
-        user = await self.user_repo.get_by_identifier(identifier)
+        user = await self.user_reader.get_by_identifier(identifier)
         if not user:
             raise NotFoundError("User not found")
         forget_token = await self.intent_store.store(intent=user.id)

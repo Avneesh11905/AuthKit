@@ -1,4 +1,4 @@
-from authkit.ports.user_repo import UserRepository
+from authkit.ports.user_repo_cqrs import UserReaderRepository
 from authkit.ports.token_service import TokenService
 from authkit.ports.otp.otp_store import OTPStore    
 from authkit.ports.otp.otp_manager import OTPManager
@@ -12,13 +12,13 @@ class StartLogoutAllWithOTPUseCase:
     Use case to initiate global logout using OTP.
     """
     def __init__(self,
-                 user_repo: UserRepository,
+                 user_reader: UserReaderRepository,
                  token_service: TokenService,
                  intent_store: UserIDIntentStore,
                  otp_store: OTPStore,
                  otp_manager: OTPManager,
                  ):
-        self.user_repo = user_repo
+        self.user_reader = user_reader
         self.token_service = token_service
         self.otp_store = otp_store
         self.otp_manager = otp_manager
@@ -37,7 +37,7 @@ class StartLogoutAllWithOTPUseCase:
         Raises:
             InvalidCredentialsError: If the user is not found.
         """
-        user = await self.user_repo.get_by_id(user_id)
+        user = await self.user_reader.get_by_id(user_id)
         if not user:
             raise InvalidCredentialsError("User not found")
         logout_token = await self.intent_store.store(intent=user.id)
