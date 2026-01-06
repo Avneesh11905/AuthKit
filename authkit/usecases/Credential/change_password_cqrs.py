@@ -1,6 +1,6 @@
 from authkit.ports.passwd_manager import PasswordManager
 from authkit.ports.user_repo_cqrs import UserReaderRepository , UserWriterRepository
-from authkit.ports.session_service import SessionService
+from authkit.ports.session_service import AuthSessionService
 from authkit.exceptions import NotFoundError , InvalidCredentialsError
 from uuid import UUID
 
@@ -15,7 +15,7 @@ class ChangePasswordUseCase:
                  user_reader: UserReaderRepository,
                  user_writer: UserWriterRepository,
                  password_manager: PasswordManager,
-                 session_service: SessionService):
+                 session_service: AuthSessionService):
         self.user_reader = user_reader
         self.user_writer = user_writer
         self.password_manager = password_manager

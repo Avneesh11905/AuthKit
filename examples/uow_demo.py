@@ -1,6 +1,9 @@
+# Demonstrates Unit of Work (transactional) consistency with AuthKit
 from dataclasses import dataclass
-from authkit import AuthKit
-from authkit.ports import UserRepository
+from authkit import AuthKit, User
+from authkit.ports import UserRepository, AuthSessionService, AuthSession
+from authkit.exceptions import ConflictError
+from uuid import UUID
 
 # --- Mock SQLAlchemy Session ---
 class MockSession:
@@ -67,10 +70,9 @@ def run_example():
         def verify(self, p, h): return True
         def hash(self, p): return "hashed"
         
-    class StubSessionService:
-        def issue(self, user_id, credential_version): 
-            from uuid import uuid4, UUID
-            from dataclasses import dataclass
+    class StubAuthSessionService:
+        def issue(self, user_id: UUID, credential_version: int) -> AuthSession:
+            from uuid import uuid4
             
             @dataclass
             class MockAuthSession:
@@ -87,7 +89,7 @@ def run_example():
     # Create a Global AuthKit instance (Singleton-ish)
     auth = AuthKit(
         password_manager=StubPasswordManager(),
-        session_service=StubSessionService()
+        session_service=StubAuthSessionService()
     )
     
     # 2. Execution (Per Request)

@@ -3,7 +3,7 @@ import authkit.usecases # Trigger registration
 from .adapters import AuthAdapters
 from authkit.ports import (
     UserRepository, UserReaderRepository, UserWriterRepository,
-    PasswordManager, SessionService,
+    PasswordManager, AuthSessionService,
     OTPStore, OTPManager,
     RegistrationIntentStore, UserIDIntentStore
 )
@@ -50,7 +50,7 @@ class AuthKit:
         
         # Core Services
         password_manager: Optional[PasswordManager] = None,
-        session_service: Optional[SessionService] = None,
+        session_service: Optional[AuthSessionService] = None,
         
         # OTP Services
         otp_store: Optional[OTPStore] = None,
@@ -134,7 +134,7 @@ class AuthKit:
         user_reader: Optional[UserReaderRepository] = None,
         user_writer: Optional[UserWriterRepository] = None,
         password_manager: Optional[PasswordManager] = None,
-        session_service: Optional[SessionService] = None,
+        session_service: Optional[AuthSessionService] = None,
         otp_store: Optional[OTPStore] = None,
         otp_manager: Optional[OTPManager] = None,
         registration_intent_store: Optional[RegistrationIntentStore] = None,

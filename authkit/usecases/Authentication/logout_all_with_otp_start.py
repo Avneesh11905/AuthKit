@@ -1,5 +1,5 @@
 from authkit.ports.user_repo_cqrs import UserReaderRepository
-from authkit.ports.session_service import SessionService
+from authkit.ports.session_service import AuthSessionService
 from authkit.ports.otp.otp_store import OTPStore    
 from authkit.ports.otp.otp_manager import OTPManager
 from authkit.ports.intents.user_id_intent_store import UserIDIntentStore 
@@ -16,7 +16,7 @@ class StartLogoutAllWithOTPUseCase:
     """
     def __init__(self,
                  user_reader: UserReaderRepository,
-                 session_service: SessionService,
+                 session_service: AuthSessionService,
                  intent_store: UserIDIntentStore,
                  otp_store: OTPStore,
                  otp_manager: OTPManager,

@@ -8,8 +8,8 @@ from authkit.ports import (
     UserIDIntentStore,
     OTPManager,
     OTPStore,
-    SessionService,
-    Session,
+    AuthSessionService,
+    AuthSession,
     PasswordManager,
     UserRepository
 )
@@ -36,8 +36,8 @@ __all__ = [
     "UserIDIntentStore",
     "OTPManager",
     "OTPStore",
-    "SessionService",
-    "Session",
+    "AuthSessionService",
+    "AuthSession",
     "PasswordManager",
     "UserRepository",
     # "SecurityEventPublisher",

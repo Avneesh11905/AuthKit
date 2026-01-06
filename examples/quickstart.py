@@ -5,7 +5,7 @@ from datetime import datetime
 # 1. CORE IMPORTS
 from authkit import AuthKit, User
 from authkit.exceptions import ConflictError
-from authkit.ports import Session
+from authkit.ports import AuthSession
 from dataclasses import dataclass
 
 @dataclass
@@ -53,7 +53,7 @@ class SimplePasswordManager:
     def verify(self, password: str, hashed_password: str) -> bool:
         return hashed_password == "hashed_" + password[::-1]
 
-class InMemorySessionService:
+class InMemoryAuthSessionService:
     """Simple random token generator."""
     def issue(self, user_id: UUID, credential_version: int) -> QuickStartSession:
         return QuickStartSession(
@@ -99,7 +99,7 @@ def main():
     auth = AuthKit(
         user_repo=InMemoryUserRepo(),
         password_manager=SimplePasswordManager(),
-        session_service=InMemorySessionService()
+        session_service=InMemoryAuthSessionService()
     )
     
     email = "newuser@example.com"

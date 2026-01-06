@@ -1,9 +1,7 @@
 from uuid import UUID, uuid4
 from authkit import AuthKit, User 
 from authkit.exceptions import ConflictError
-from authkit.ports import Session
 from dataclasses import dataclass
-from typing import Any
 
 # --- MOCKS ---
 
@@ -32,7 +30,7 @@ class SimplePasswordManager:
     def hash(self, password: str) -> str: return "hashed_" + password
     def verify(self, password: str, hashed_password: str) -> bool: return hashed_password == "hashed_" + password
 
-class InMemorySessionService:
+class InMemoryAuthSessionService:
     def issue(self, user_id: UUID, credential_version: int) -> QuickStartSession:
         return QuickStartSession(token="tok", session_id=uuid4(), credentials_version=credential_version)
     def verify(self, token: str, creds_version: int) -> bool: return True
@@ -66,7 +64,7 @@ def test_metadata():
     auth = AuthKit(
         user_repo=InMemoryUserRepo(),
         password_manager=SimplePasswordManager(),
-        session_service=InMemorySessionService(),
+        session_service=InMemoryAuthSessionService(),
         otp_store=InMemoryOTPStore(),
         otp_manager=InMemoryOTPManager(),
         registration_intent_store=FakeIntentStore()

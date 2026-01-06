@@ -1,4 +1,4 @@
-from authkit.ports import UserRepository, SessionService, PasswordManager, UserIDIntentStore, RegistrationIntentStore
+from authkit.ports import UserRepository, AuthSessionService, PasswordManager, UserIDIntentStore, RegistrationIntentStore
 from authkit.ports.user_repo_cqrs import UserReaderRepository, UserWriterRepository
 
 
@@ -24,7 +24,7 @@ class AuthAdapters:
         intent_store: (Optional) For storing Login/Recovery intents.
         registration_intent_store: (Optional) For storing Registration intents.
     """
-    session_service: SessionService
+    session_service: AuthSessionService
     password_manager: PasswordManager
     
     user_repo: UserRepository | None = None

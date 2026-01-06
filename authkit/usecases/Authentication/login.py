@@ -1,6 +1,6 @@
 from authkit.ports.user_repo_cqrs import UserReaderRepository , UserWriterRepository
 from authkit.ports.passwd_manager import PasswordManager 
-from authkit.ports.session_service import SessionService , Session
+from authkit.ports.session_service import AuthSessionService , AuthSession
 from authkit.exceptions import InvalidCredentialsError
 
 from authkit.core import Registry
@@ -14,7 +14,7 @@ class LoginUseCase:
                  user_reader: UserReaderRepository,
                  user_writer: UserWriterRepository,
                  password_manager: PasswordManager,
-                 session_service: SessionService,
+                 session_service: AuthSessionService,
                  ):
 
         self.user_reader = user_reader
@@ -22,7 +22,7 @@ class LoginUseCase:
         self.session_service = session_service
         self.user_writer = user_writer
 
-    def execute(self, identifier: str, password: str ) -> Session:
+    def execute(self, identifier: str, password: str ) -> AuthSession:
         """
         Authenticates a user and issues a token using CQRS repositories.
         
@@ -31,7 +31,7 @@ class LoginUseCase:
             password: The user's password.
             
         Returns:
-            A Session object representing the authenticated session.
+            A AuthSession object representing the authenticated session.
             
         Raises:
             InvalidCredentialsError: If the user is not found or password is incorrect.

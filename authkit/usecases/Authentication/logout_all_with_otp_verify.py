@@ -1,5 +1,5 @@
 from authkit.ports.user_repo_cqrs import UserWriterRepository
-from authkit.ports.session_service import SessionService
+from authkit.ports.session_service import AuthSessionService
 from authkit.ports.otp.otp_store import OTPStore    
 from authkit.ports.intents.user_id_intent_store import UserIDIntentStore 
 from authkit.exceptions.auth import InvalidOTPError
@@ -16,7 +16,7 @@ class VerifyLogoutAllWithOTPUseCase:
     def __init__(self,
                  user_writer: UserWriterRepository,
                  intent_store: UserIDIntentStore,
-                 session_service: SessionService,
+                 session_service: AuthSessionService,
                  otp_store: OTPStore,
                  ):
         self.user_writer = user_writer

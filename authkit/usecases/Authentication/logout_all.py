@@ -1,4 +1,4 @@
-from authkit.ports.session_service import SessionService
+from authkit.ports.session_service import AuthSessionService
 from authkit.ports.user_repo_cqrs import UserWriterRepository , UserReaderRepository
 from authkit.exceptions.auth import NotFoundError
 from uuid import UUID
@@ -13,7 +13,7 @@ class LogoutAllUseCase:
     def __init__(self, 
                  user_writer: UserWriterRepository,
                  user_reader: UserReaderRepository,
-                 session_service: SessionService ):
+                 session_service: AuthSessionService ):
         self.user_writer = user_writer
         self.user_reader = user_reader
         self.session_service = session_service

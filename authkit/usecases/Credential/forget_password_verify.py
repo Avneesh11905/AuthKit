@@ -1,5 +1,5 @@
 from authkit.ports.user_repo_cqrs import UserWriterRepository
-from authkit.ports.session_service import SessionService
+from authkit.ports.session_service import AuthSessionService
 from authkit.ports.otp.otp_store import OTPStore    
 from authkit.ports.otp.otp_manager import OTPManager
 from authkit.ports.passwd_manager import PasswordManager
@@ -17,7 +17,7 @@ class VerifyForgetPasswordUseCase:
     """
     def __init__(self,
                  user_writer: UserWriterRepository,
-                 session_service: SessionService,
+                 session_service: AuthSessionService,
                  password_manager: PasswordManager,
                  intent_store: UserIDIntentStore,
                  otp_store: OTPStore,

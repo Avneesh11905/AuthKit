@@ -1,7 +1,7 @@
 from typing import Protocol
 from uuid import UUID
 
-class Session(Protocol):
+class AuthSession(Protocol):
     """
     Represents an issued authentication session.
     
@@ -16,7 +16,7 @@ class Session(Protocol):
     credentials_version: int
     revoked: bool = False
 
-class SessionService(Protocol):
+class AuthSessionService(Protocol):
     """
     Interface for Token Management (Issuance, Verification, Revocation).
     
@@ -25,7 +25,7 @@ class SessionService(Protocol):
     usually requires some state mechanism (like blacklisting or versioning).
     """
 
-    def issue(self, user_id: UUID, credential_version: int) -> Session: 
+    def issue(self, user_id: UUID, credential_version: int) -> AuthSession: 
         """
         Generates and issues a new authentication token for a user.
         
@@ -35,7 +35,7 @@ class SessionService(Protocol):
                                       Used to invalidate old tokens when passwords change.
             
         Returns:
-            Session: A simplified object containing the token string and ID.
+            AuthSession: A simplified object containing the token string and ID.
         """
         ...
         

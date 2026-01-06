@@ -1,4 +1,4 @@
-from authkit.ports.session_service import SessionService
+from authkit.ports.session_service import AuthSessionService
 from authkit.ports.user_repo_cqrs import UserReaderRepository , UserWriterRepository
 from authkit.ports.otp.otp_manager import OTPManager
 from authkit.ports.otp.otp_store import OTPStore ,OTPPurpose
@@ -16,11 +16,13 @@ class StartDeleteAccountWithOTPUseCase:
                  user_reader: UserReaderRepository,
                  intent_store: UserIDIntentStore,
                  otp_store: OTPStore,
-                 otp_manager: OTPManager ):
+                 otp_manager: OTPManager,
+                 session_service: AuthSessionService ):
         self.user_reader = user_reader
         self.otp_store = otp_store
         self.otp_manager = otp_manager
         self.intent_store = intent_store
+        self.session_service = session_service
 
     def execute(self, user_id: UUID) -> UUID:
         """

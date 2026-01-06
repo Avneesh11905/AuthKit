@@ -1,4 +1,4 @@
-from authkit.ports.session_service import SessionService
+from authkit.ports.session_service import AuthSessionService
 from authkit.ports.user_repo_cqrs import UserReaderRepository , UserWriterRepository
 from uuid import UUID
 
@@ -12,7 +12,7 @@ class DeleteAccountUseCase:
     def __init__(self, 
                  user_reader: UserReaderRepository,
                  user_writer: UserWriterRepository,
-                session_service: SessionService ):
+                session_service: AuthSessionService ):
         self.user_reader = user_reader
         self.user_writer = user_writer
         self.session_service = session_service

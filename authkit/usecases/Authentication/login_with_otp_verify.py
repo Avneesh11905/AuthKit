@@ -1,6 +1,6 @@
 from authkit.ports.otp.otp_store import OTPStore
 from authkit.ports.user_repo_cqrs import UserReaderRepository , UserWriterRepository
-from authkit.ports.session_service import SessionService ,Session
+from authkit.ports.session_service import AuthSessionService ,AuthSession
 from authkit.ports.intents.user_id_intent_store import UserIDIntentStore 
 from authkit.exceptions.auth import InvalidOTPError
 from authkit.domain import OTPPurpose
@@ -18,7 +18,7 @@ class VerifyLoginWithOTPUseCase:
         user_reader: UserReaderRepository,
         user_writer: UserWriterRepository,
         intent_store: UserIDIntentStore,
-        session_service: SessionService,
+        session_service: AuthSessionService,
         otp_store: OTPStore,
     ):
         self.user_reader = user_reader
@@ -27,7 +27,7 @@ class VerifyLoginWithOTPUseCase:
         self.otp_store = otp_store
         self.intent_store = intent_store
 
-    def execute(self, verification_token: UUID, code: str) -> Session:
+    def execute(self, verification_token: UUID, code: str) -> AuthSession:
         """
         Verifies the OTP and issues an authentication token.
         

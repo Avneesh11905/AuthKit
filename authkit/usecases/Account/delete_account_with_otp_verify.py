@@ -1,4 +1,4 @@
-from authkit.ports.session_service import SessionService
+from authkit.ports.session_service import AuthSessionService
 from authkit.ports.user_repo_cqrs import UserReaderRepository , UserWriterRepository
 from authkit.ports.otp.otp_manager import OTPManager
 from authkit.ports.otp.otp_store import OTPStore ,OTPPurpose
@@ -15,7 +15,7 @@ class VerifyDeleteAccountWithOTPUseCase:
     def __init__(self, 
                  user_reader: UserReaderRepository,
                  user_writer: UserWriterRepository,
-                 session_service: SessionService,
+                 session_service: AuthSessionService,
                  intent_store: UserIDIntentStore,
                  otp_store: OTPStore,
                  otp_manager: OTPManager ):

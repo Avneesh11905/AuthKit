@@ -1,4 +1,4 @@
-from authkit.ports.session_service import SessionService
+from authkit.ports.session_service import AuthSessionService
 from uuid import UUID
 from authkit.exceptions.auth import NotFoundError
 
@@ -9,7 +9,7 @@ class LogoutUseCase:
     """
     Use case for logging out a user (revoking a single token).
     """
-    def __init__(self, session_service: SessionService):
+    def __init__(self, session_service: AuthSessionService):
         self.session_service = session_service
     
     def execute(self, user_id: UUID, token_id: UUID):
