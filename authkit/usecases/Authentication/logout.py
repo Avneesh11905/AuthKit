@@ -1,15 +1,18 @@
-from authkit.ports.token_service import TokenService
+from authkit.ports.session_service import SessionService
 from uuid import UUID
 from authkit.exceptions.auth import NotFoundError
 
+from authkit.core import Registry
+
+@Registry.register("logout")
 class LogoutUseCase:
     """
     Use case for logging out a user (revoking a single token).
     """
-    def __init__(self, token_service: TokenService):
-        self.token_service = token_service
+    def __init__(self, session_service: SessionService):
+        self.session_service = session_service
     
-    async def execute(self, user_id: UUID, token_id: UUID):
+    def execute(self, user_id: UUID, token_id: UUID):
         """
         Revokes a specific session token.
         
@@ -20,6 +23,6 @@ class LogoutUseCase:
         Raises:
             NotFoundError: If the token is invalid or does not belong to the user.
         """
-        revoked = await self.token_service.revoke(user_id, token_id)
+        revoked = self.session_service.revoke(user_id, token_id)
         if not revoked:
             raise NotFoundError("Token not found or not owned by user")

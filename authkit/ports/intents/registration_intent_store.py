@@ -7,7 +7,7 @@ class RegistrationIntentStore(Protocol):
     Interface for storing temporary registration data.
     Suggestion: save the otp using key like intent:registration:{intent.id}
     """
-    async def store(self, intent: RegistrationIntent) -> UUID: 
+    def store(self, intent: RegistrationIntent) -> UUID: 
         """
         Stores registration intent data.
         
@@ -19,7 +19,7 @@ class RegistrationIntentStore(Protocol):
         """
         ...
         
-    async def get(self, key: UUID) -> RegistrationIntent | None: 
+    def get(self, key: UUID) -> RegistrationIntent | None: 
         """
         Retrieves registration intent data.
         
@@ -31,7 +31,7 @@ class RegistrationIntentStore(Protocol):
         """
         ...
         
-    async def delete(self, key: UUID) -> None: 
+    def delete(self, key: UUID) -> None: 
         """
         Deletes a registration intent.
         

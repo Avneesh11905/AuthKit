@@ -8,25 +8,28 @@ from authkit.domain import OTPPurpose
 from uuid import UUID
 
 
+from authkit.core import Registry
+
+@Registry.register("login_otp_start")
 class StartLoginWithOTPUseCase:
     """
     Use case to initiate login with OTP (MFA).
     """
     def __init__(
         self,
-        user_reader_repo: UserReaderRepository,
+        user_reader: UserReaderRepository,
         password_manager: PasswordManager,
         intent_store: UserIDIntentStore,
         otp_store: OTPStore,
         otp_manager: OTPManager,
     ):
-        self.user_reader_repo = user_reader_repo
+        self.user_reader = user_reader
         self.password_manager = password_manager
         self.otp_store = otp_store
         self.otp_manager = otp_manager
         self.intent_store = intent_store
 
-    async def execute(self, identifier: str, password: str) -> UUID:
+    def execute(self, identifier: str, password: str) -> UUID:
         """
         Validates credentials and starts the OTP login flow.
         
@@ -40,18 +43,18 @@ class StartLoginWithOTPUseCase:
         Raises:
             InvalidCredentialsError: If credentials are invalid.
         """
-        user = await self.user_reader_repo.get_by_identifier(identifier=identifier)
+        user = self.user_reader.get_by_identifier(identifier=identifier)
         if not user:
             raise InvalidCredentialsError("User not found")
-        if not await self.password_manager.verify(password=password, 
+        if not self.password_manager.verify(password=password, 
                                                     hashed_password=user.password_hash):
             raise InvalidCredentialsError("Invalid password")
-        verification_token = await self.intent_store.store(intent=user.id)
-        otp = await self.otp_manager.generate()
-        await self.otp_store.store(token=verification_token,
+        verification_token = self.intent_store.store(intent=user.id)
+        otp = self.otp_manager.generate()
+        self.otp_store.store(token=verification_token,
                                    code=otp,
                                    purpose=OTPPurpose.MFA)
-        await self.otp_manager.send(identifier=identifier,
+        self.otp_manager.send(identifier=identifier,
                                     code=otp,
                                     purpose=OTPPurpose.MFA)
         return verification_token

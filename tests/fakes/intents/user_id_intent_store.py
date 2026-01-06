@@ -8,7 +8,7 @@ class FakeUserIDIntentStore:
     def __init__(self):
         self.intents: dict[UUID, UUID] = {}
 
-    async def store(self, intent: UUID) -> UUID: 
+    def store(self, intent: UUID) -> UUID: 
         """
         Stores a user ID intent.
         """
@@ -16,13 +16,13 @@ class FakeUserIDIntentStore:
         self.intents[key] = intent
         return key
 
-    async def get(self, key: UUID) -> UUID | None: 
+    def get(self, key: UUID) -> UUID | None: 
         """
         Retrieves a user ID intent.
         """
         return self.intents.get(key)
 
-    async def delete(self, key: UUID) -> None: 
+    def delete(self, key: UUID) -> None: 
         """
         Deletes a user ID intent.
         """

@@ -1,0 +1,14 @@
+[
+    {
+        "title": "AuthKit Python Module",
+        "description": "Secure, type-safe authentication for Python apps. Features MFA/OTP flows (Login, Registration, Account Deletion), flexible clean architecture with Ports & Adapters, and a developer-friendly Facade API.",
+        "tags": [
+            "Python",
+            "Authentication",
+            "Clean Architecture",
+            "MFA",
+            "Type Safe"
+        ],
+        "github": "https://github.com/Avneesh11905/AuthKit"
+    }
+]

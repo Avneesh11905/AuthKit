@@ -6,7 +6,7 @@ class SecurityEventPublisher(Protocol):
     Interface for publishing security-related events.
     """
 
-    async def login_success(self, user_id: UUID): 
+    def login_success(self, user_id: UUID): 
         """
         Publishes a login success event.
         
@@ -15,7 +15,7 @@ class SecurityEventPublisher(Protocol):
         """
         ...
 
-    async def login_failure(self, identifier: str): 
+    def login_failure(self, identifier: str): 
         """
         Publishes a login failure event.
         
@@ -24,7 +24,7 @@ class SecurityEventPublisher(Protocol):
         """
         ...
 
-    async def otp_failed(self, user_id: UUID): 
+    def otp_failed(self, user_id: UUID): 
         """
         Publishes an OTP verification failure event.
         
@@ -33,7 +33,7 @@ class SecurityEventPublisher(Protocol):
         """
         ...
 
-    async def account_locked(self, user_id: UUID): 
+    def account_locked(self, user_id: UUID): 
         """
         Publishes an account locked event.
         

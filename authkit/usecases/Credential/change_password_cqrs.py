@@ -1,10 +1,13 @@
 from authkit.ports.passwd_manager import PasswordManager
 from authkit.ports.user_repo_cqrs import UserReaderRepository , UserWriterRepository
-from authkit.ports.token_service import TokenService
+from authkit.ports.session_service import SessionService
 from authkit.exceptions import NotFoundError , InvalidCredentialsError
 from uuid import UUID
 
-class ChangePasswordCQRSUseCase:
+from authkit.core import Registry
+
+@Registry.register("change_password")
+class ChangePasswordUseCase:
     """
     Use case for changing a user's password using CQRS pattern.
     """
@@ -12,13 +15,13 @@ class ChangePasswordCQRSUseCase:
                  user_reader: UserReaderRepository,
                  user_writer: UserWriterRepository,
                  password_manager: PasswordManager,
-                 token_service: TokenService):
+                 session_service: SessionService):
         self.user_reader = user_reader
         self.user_writer = user_writer
         self.password_manager = password_manager
-        self.token_service = token_service
+        self.session_service = session_service
     
-    async def execute(self, user_id: UUID, old_password: str, new_password: str) -> None:
+    def execute(self, user_id: UUID, old_password: str, new_password: str) -> None:
         """
         Changes the user's password.
         
@@ -36,12 +39,12 @@ class ChangePasswordCQRSUseCase:
         """
         if old_password == new_password:
             raise InvalidCredentialsError("New password must be different")
-        user = await self.user_reader.get_by_id(user_id=user_id)
+        user = self.user_reader.get_by_id(user_id=user_id)
         if not user:
             raise NotFoundError("User not found")
-        if not await self.password_manager.verify(password=old_password, hashed_password=user.password_hash):
+        if not self.password_manager.verify(password=old_password, hashed_password=user.password_hash):
             raise InvalidCredentialsError("Invalid password")
-        await self.token_service.revoke_all(user_id=user_id)
-        await self.user_writer.increment_credentials_version(user_id=user_id)
-        hashed_password = await self.password_manager.hash(password=new_password)
-        await self.user_writer.change_password(user_id=user_id, new_password_hash=hashed_password)
+        self.session_service.revoke_all(user_id=user_id)
+        self.user_writer.increment_credentials_version(user_id=user_id)
+        hashed_password = self.password_manager.hash(password=new_password)
+        self.user_writer.change_password(user_id=user_id, new_password_hash=hashed_password)

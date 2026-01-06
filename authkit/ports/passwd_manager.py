@@ -4,7 +4,7 @@ class PasswordManager(Protocol):
     """
     Interface for hashing and verifying passwords.
     """
-    async def hash(self, password: str) -> str: 
+    def hash(self, password: str) -> str: 
         """
         Hashes a plain text password.
         
@@ -16,7 +16,7 @@ class PasswordManager(Protocol):
         """
         ...
 
-    async def verify(self, password: str, hashed_password: str) -> bool: 
+    def verify(self, password: str, hashed_password: str) -> bool: 
         """
         Verifies a plain text password against a hash.
         

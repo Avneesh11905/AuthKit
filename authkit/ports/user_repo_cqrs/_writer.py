@@ -3,7 +3,7 @@ from uuid import UUID
 from authkit.domain import User
 
 class UserWriterRepository(Protocol):
-    async def add(self, user: User) -> User:
+    def add(self, user: User) -> User:
         """
         Persists a new user.
 
@@ -15,7 +15,7 @@ class UserWriterRepository(Protocol):
         """
         ...
 
-    async def update_last_login(self, user_id: UUID) -> None:
+    def update_last_login(self, user_id: UUID) -> None:
         """
         Updates the last login timestamp for a user.
 
@@ -24,7 +24,7 @@ class UserWriterRepository(Protocol):
         """
         ...
 
-    async def delete(self, user_id: UUID) -> None:
+    def delete(self, user_id: UUID) -> None:
         """
         Deletes (or soft-deletes) a user.
 
@@ -33,7 +33,7 @@ class UserWriterRepository(Protocol):
         """
         ...
 
-    async def increment_credentials_version(self, user_id: UUID) -> None:
+    def increment_credentials_version(self, user_id: UUID) -> None:
         """
         Increments the user's credential version, invalidating existing tokens.
 
@@ -42,7 +42,7 @@ class UserWriterRepository(Protocol):
         """
         ...
 
-    async def change_password(self, user_id: UUID, new_password_hash: str) -> None:
+    def change_password(self, user_id: UUID, new_password_hash: str) -> None:
         """
         Updates the user's password hash.
 

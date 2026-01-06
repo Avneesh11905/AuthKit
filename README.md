@@ -1,130 +1,139 @@
-# AuthKit
+# AuthKit 🔒
 
-A robust, Clean Architecture-based authentication library for Python. AuthKit is designed to be framework-agnostic, easily extensible, and highly testable, providing a solid foundation for implementing secure authentication flows in any Python application.
+**Secure, Type-Safe, and Extensible Authentication for Python Applications.**
 
-## Features
+AuthKit is a clean-architecture authentication library designed for flexibility. It decouples your business logic from the underlying storage mechanism (SQL, NoSQL, In-Memory) using the **Ports and Adapters** pattern, while providing a developer-friendly **Facade** for everyday use.
 
-- **Architectural Excellence**:
-    - **Clean Architecture**: Domain-centric design with strict dependency rules.
-    - **Flexible Persistence**: Choose between **Unified Repository** (Simpler) or **CQRS** (Scalable) patterns depending on your needs.
-    - **Technology Independent**: Framework-agnostic core (use with FastAPI, Flask, Django, etc.) and database-agnostic persistence (SQL, NoSQL, In-Memory).
-- **Core Authentication**:
-    - User Registration
-    - Login (Username/Password)
-    - Logout (Single session)
-    - Logout All (Global session revocation)
-- **Credential Management**:
-    - Change Password (with automatic session revocation)
-    - Forget Password Flows (OTP based)
-- **Multi-Factor Authentication (MFA)**:
-    - Login with OTP support
-- **Extensible Ports**:
-    - `UserRepository`: For user persistence.
-    - `PasswordManager`: For hashing and verification.
-    - `TokenService`: For token generation and management.
-    - `OTPStore` & `OTPManager`: For handling One-Time Passwords.
-- **Type Safe**: Comprehensive Python type hints.
+## ✨ Features
 
-## Directory Structure
+*   **⚡ Unified Facade API**: Easy-to-use `AuthKit` class entry point.
+*   **🔌 Storage Agnostic**: Swap databases without changing a line of business logic.
+*   **🛡️ Type-Safe**: Fully typed with strict Mypy compliance and `.pyi` stubs for excellent IDE support.
+*   **🔐 MFA / OTP**: Built-in support for Multi-Factor Authentication flows (Login, Registration, Account Deletion).
+*   **🏗️ Clean Architecture**: Strict separation of Use Cases (Interactors), Entities, and Ports.
+*   **🧩 Extensible**: Add custom use cases and inject your own dependencies easily.
 
-```
-authkit/
-├── domain/       # Core entities (User, RegistrationIntent) and Enums
-├── ports/        # Protocols (Interfaces) for external dependencies
-├── usecases/     # Business logic implementations
-│   ├── Account/
-│   ├── Authentication/
-│   └── Credential/
-└── exceptions/   # Domain-specific errors
-```
+### Core Capabilities
+*   **Authentication**: Login (Password, OTP via Email/SMS), Logout.
+*   **Registration**: Sign up with optimal verification flows.
+*   **Account Management**: Change Password, Forgot Password, Delete Account (with OTP verification).
+*   **Security**: Logout All Sessions, credential versioning.
 
-## Installation
+## 📦 Installation
 
-Ensure you have Python 3.10+ installed.
-
-You can install the package locally:
+Since AuthKit is not yet on PyPI, you can install it directly from the source:
 
 ```bash
+git clone https://github.com/Avneesh11905/AuthKit.git
+cd AuthKit
 pip install .
 ```
 
-## Quick Start
+## 🚀 Quick Start
 
-The fastest way to understand AuthKit is to run the self-contained example. It implements standard "Zero-Dependency" in-memory adapters to demonstrate the full Registration flow.
-
-**[View the Quick Start Script](examples/quickstart.py)**
-
-To run it:
-```bash
-python examples/quickstart.py
-```
-
-## Integrating into Your Project
-
-To use AuthKit in production, you must implement the Core Ports (Interfaces) using your technology stack (e.g., SQLAlchemy, Redis, Argon2).
-
-### 1. Implement Core Ports
-
-You can choose between a **Unified** approach (Simpler) or **CQRS** (Advanced).
-
-**Option A: Unified Repository (Recommended for most apps)**
-Implement `UserRepository` which combines read and write operations.
-
-| Interface | Responsibility | Example Implementation |
-|-----------|----------------|------------------------|
-| `UserRepository` | Handles all user persistence (Read & Write). | `Select/Add/Update(User)` |
-| `PasswordManager` | Hashing and verification logic. | `passlib` or `argon2-cffi` wrapper. |
-| `TokenService` | Token generation and validation. | `PyJWT` wrapper for HS256/RS256. |
-
-**Option B: CQRS (For high scalability)**
-Implement separate `UserReaderRepository` and `UserWriterRepository` interfaces if you need to split read/write models.
-
-### 2. Dependency Injection
-
-Inject your production adapters into the Use Cases:
+AuthKit runs out-of-the-box with any implementation of its `Ports`.
 
 ```python
-# Setup your adapters
-user_repo = PostgresUserRepo() # Implements UserRepository
-password_manager = Argon2PasswordManager()
-token_service = JwtTokenService()
-
-# Initialize Use Case
-# Note: For Unified Repos, inject the SAME instance for both reader and writer
-login_uc = LoginCQRSUseCase(
-    user_reader=user_repo,
-    user_writer=user_repo,
-    password_manager=password_manager,
-    token_service=token_service
+from authkit import AuthKit
+# See 'examples/quickstart.py' for a full runnable in-memory example.
+auth = AuthKit(
+    user_repo=my_user_repo,
+    password_manager=my_password_manager,
+    session_service=my_session_service,
+    otp_store=my_otp_store,     # Optional: For MFA
+    otp_manager=my_otp_manager  # Optional: For sending Emails/SMS
 )
 
-# Execute
-token = await login_uc.execute("user@example.com", "password")
+# 1. Register a user
+user = auth.register.execute("alice@example.com", "secureRequest1!")
+
+# 2. Login
+session = auth.login.execute("alice@example.com", "secureRequest1!")
+print(f"Access Token: {session.token}")
 ```
 
-## Testing
+## 🛡️ Advanced Usage: OTP Flows
 
-The project includes a comprehensive test suite using `pytest`.
+AuthKit supports secure, multi-step actions using OTPs (Time-based or Token-based).
 
-To run the tests:
+### Delete Account with OTP
+Securely delete an account by requiring verification.
 
-```bash
-# Install test dependencies
-pip install pytest pytest-asyncio
+```python
+# 1. Start the deletion process (sends OTP to user's email/phone)
+verification_token = auth.delete_account_otp_start.execute(user_id)
 
-# Run tests
-# Run tests
-pytest
+# 2. User enters the code they received
+# 3. Verify and finalize deletion
+auth.delete_account_otp_verify.execute(
+    verification_token=verification_token, 
+    code="123456"
+)
 ```
 
-### Testing Strategy
+## 📐 Architecture
 
-The tests are designed to be **Expectation-Based** and **Isolated**:
-- **Expectation-Based**: Tests verify the behavioral contract of the Use Cases (Inputs -> Outputs/Side Effects) rather than internal implementation details.
-- **Dependency Injection**: We use `Fake` implementations of ports (Repositories, Stores) injected into the Use Cases.
-- **Isolation**: Each test runs with a fresh, isolated state (new in-memory stores) to prevent leakage and ensure reliability.
+AuthKit follows **Clean Architecture** principles:
 
+*   **Core (`authkit.core`)**: Contains the `AuthKit` Facade, Registry, and Dependency Resolver.
+*   **Ports (`authkit.ports`)**: Interfaces (Protocols) that your infrastructure must implement (e.g., `UserRepository`, `SessionService`).
+*   **Use Cases (`authkit.usecases`)**: Pure business logic (e.g., `LoginUseCase`, `RegistrationUseCase`).
+*   **Entities (`authkit.domain`)**: Data classes representing core concepts (`User`, `RegistrationIntent`).
 
-## License
+### Dependency Injection
+Dependencies are injected into the `AuthKit` constructor. You can provide a unified `user_repo` (for simple apps) or separate `user_reader` and `user_writer` (for CQRS/Scale).
 
-[MIT](LICENSE)
+## 🧩 Extending AuthKit
+
+Want to add a "Greet User" feature?
+
+### 1. Define the Use Case
+```python
+from authkit.core import Registry, UserRepository
+
+@Registry.register("greet_user")
+class GreetUserUseCase:
+    def __init__(self, user_repo: UserRepository):
+        self.user_repo = user_repo
+
+    def execute(self, email: str):
+        user = self.user_repo.get_by_identifier(email)
+        print(f"Hello, {user.id}!")
+```
+
+### 2. (Optional) Typed Subclassing for IDE Support
+To get full autocomplete in VS Code / PyCharm, define a typed subclass:
+
+```python
+from authkit import AuthKit
+
+class MyAuthKit(AuthKit):
+    greet_user: GreetUserUseCase
+
+auth = MyAuthKit(...)
+auth.greet_user.execute("alice@example.com") # IDE knows about this!
+```
+
+## 🧪 Development
+
+1.  **Clone the repository**:
+    ```bash
+    git clone https://github.com/Avneesh11905/AuthKit.git
+    cd AuthKit
+    ```
+
+2.  **Install dependencies**:
+    ```bash
+    pip install .
+    pip install pytest mypy
+    ```
+
+3.  **Run Tests**:
+    ```bash
+    pytest tests/
+    ```
+
+4.  **Static Analysis**:
+    ```bash
+    mypy authkit/ examples/ tests/
+    ```

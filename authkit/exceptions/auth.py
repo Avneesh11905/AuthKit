@@ -21,3 +21,7 @@ class NotFoundError(AuthError):
 class UserNotFoundError(NotFoundError):
     """Raised specifically when a user is not found."""
     ...
+
+class FeatureNotConfiguredError(AuthError):
+    """Raised when a feature cannot be used because its dependencies are missing."""
+    ...

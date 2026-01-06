@@ -6,7 +6,7 @@ class UserReaderRepository(Protocol):
     """
     Interface for user data persistence.
     """
-    async def get_by_identifier(self, identifier: str) -> User | None:
+    def get_by_identifier(self, identifier: str) -> User | None:
         """
         Retrieves a user by their identifier (e.g., email or username).
 
@@ -18,7 +18,7 @@ class UserReaderRepository(Protocol):
         """
         ...
 
-    async def get_by_id(self, user_id: UUID) -> User | None:
+    def get_by_id(self, user_id: UUID) -> User | None:
         """
         Retrieves a user by their unique ID.
 

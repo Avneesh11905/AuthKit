@@ -6,7 +6,7 @@ class OTPManager(Protocol):
     Interface for generating and sending OTPs (One-Time Passwords).
     """
 
-    async def generate(self) -> str: 
+    def generate(self) -> str: 
         """
         Generates a new OTP code.
         
@@ -15,7 +15,7 @@ class OTPManager(Protocol):
         """
         ...
 
-    async def send(self, identifier: str, code: str, purpose: OTPPurpose) -> None: 
+    def send(self, identifier: str, code: str, purpose: OTPPurpose) -> None: 
         """
         Sends an OTP to a user.
         

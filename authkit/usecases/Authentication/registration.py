@@ -3,15 +3,18 @@ from authkit.ports.passwd_manager import PasswordManager
 from authkit.domain import User
 from uuid import uuid4
 
+from authkit.core import Registry
+
+@Registry.register("register")
 class RegistrationUseCase:
     """
     Use case for registering a new user locally.
     """
-    def __init__(self , user_writer: UserWriterRepository , password_store: PasswordManager):
+    def __init__(self , user_writer: UserWriterRepository , password_manager: PasswordManager):
         self.user_writer = user_writer
-        self.password_store = password_store
+        self.password_manager = password_manager
     
-    async def execute(self, identifier: str, password: str):
+    def execute(self, identifier: str, password: str):
         """
         Registers a new user with an identifier and password.
         
@@ -22,7 +25,7 @@ class RegistrationUseCase:
         Returns:
             The newly created User object.
         """
-        hashed_password = await self.password_store.hash(password)
+        hashed_password = self.password_manager.hash(password)
         user = User(id=uuid4(),identifier=identifier, password_hash=hashed_password , credentials_version=0)
-        user_added = await self.user_writer.add(user)
+        user_added = self.user_writer.add(user)
         return user_added

@@ -12,7 +12,7 @@ class FakeUserWriterRepository:
     def __init__(self, store: FakeUserStore):
         self.store = store
 
-    async def add(self, user: User) -> User:
+    def add(self, user: User) -> User:
         """
         Adds a new user.
         Raises ConflictError if user already exists.
@@ -27,7 +27,7 @@ class FakeUserWriterRepository:
         self.store.users[fake_user.id] = fake_user
         return user
 
-    async def update_last_login(self, user_id: UUID) -> None:
+    def update_last_login(self, user_id: UUID) -> None:
         """
         Updates the last_login timestamp.
         """
@@ -36,7 +36,7 @@ class FakeUserWriterRepository:
             raise UserNotFoundError("User not found") 
         self.store.users[user_id].last_login = datetime.now()
 
-    async def delete(self, user_id: UUID) -> None:
+    def delete(self, user_id: UUID) -> None:
         """
         Soft-deletes a user.
         """
@@ -45,7 +45,7 @@ class FakeUserWriterRepository:
             raise UserNotFoundError("User not found")
         self.store.users[user_id].deleted = True
     
-    async def increment_credentials_version(self, user_id: UUID) -> None:
+    def increment_credentials_version(self, user_id: UUID) -> None:
         """
         Increments the user's credentials version.
         """
@@ -54,7 +54,7 @@ class FakeUserWriterRepository:
             raise UserNotFoundError("User not found")
         self.store.users[user_id].credentials_version += 1
 
-    async def change_password(self, user_id: UUID, new_password_hash: str) -> None:
+    def change_password(self, user_id: UUID, new_password_hash: str) -> None:
         """
         Updates the user's password hash.
         """

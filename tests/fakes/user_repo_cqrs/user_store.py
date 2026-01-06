@@ -1,24 +1,31 @@
 from uuid import UUID
 from authkit.domain import User
-from pydantic import BaseModel, Field
+from dataclasses import dataclass , field
 from datetime import datetime
 
-class FakeUser(BaseModel):
+
+@dataclass
+class FakeUser:
     id: UUID
     identifier : str
     password_hash : str
     credentials_version : int 
-    deleted : bool = Field(default=False)
-    last_login : datetime | None = Field(default=None)
+    deleted : bool = field(default=False)
+    last_login : datetime | None = field(default=None)
 
 def user_to_fake(user: User) -> FakeUser:
-    return FakeUser(**user.__dict__)
+    return FakeUser(id=user.id,
+                    identifier=user.identifier,
+                    password_hash=user.password_hash,
+                    credentials_version=user.credentials_version,
+                    last_login=user.last_login)
 
 def fake_to_user(fake: FakeUser) -> User:
     return User(id=fake.id, 
                 identifier=fake.identifier, 
                 password_hash=fake.password_hash, 
-                credentials_version=fake.credentials_version)
+                credentials_version=fake.credentials_version,
+                last_login=fake.last_login)
 
 class FakeUserStore:
     """

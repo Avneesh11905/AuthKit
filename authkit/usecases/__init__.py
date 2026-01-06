@@ -7,16 +7,14 @@ from authkit.usecases.Credential import *
 
 __all__ = [
     "DeleteAccountUseCase",
-    "DeleteAccountCQRSUseCase",
+    "StartDeleteAccountWithOTPUseCase",
+    "VerifyDeleteAccountWithOTPUseCase",
 
     "LoginUseCase",
-    "LoginCQRSUseCase",
     "StartLoginWithOTPUseCase",
     "VerifyLoginWithOTPUseCase",
-    "VerifyLoginCQRSWithOTPUseCase",
     "LogoutUseCase",
     "LogoutAllUseCase",
-    "LogoutAllCQRSUseCase",
     "StartLogoutAllWithOTPUseCase",
     "VerifyLogoutAllWithOTPUseCase",
     "RegistrationUseCase",
@@ -24,7 +22,6 @@ __all__ = [
     "VerifyRegistrationWithOTPUseCase",
 
     "ChangePasswordUseCase",
-    "ChangePasswordCQRSUseCase",
     "StartForgetPasswordUseCase",
     "VerifyForgetPasswordUseCase",
 

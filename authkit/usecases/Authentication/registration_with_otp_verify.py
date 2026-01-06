@@ -4,19 +4,22 @@ from authkit.ports.user_repo_cqrs import UserWriterRepository
 from authkit.exceptions.auth import InvalidOTPError 
 from authkit.domain import User
 from uuid import UUID , uuid4
+from authkit.core import Registry
+
+@Registry.register("register_otp_verify")
 class VerifyRegistrationWithOTPUseCase:
     """
     Use case to verify registration OTP and create the user.
     """
     def __init__(self, 
                  user_writer: UserWriterRepository,
-                 intent_store: RegistrationIntentStore,
+                 registration_intent_store: RegistrationIntentStore,
                  otp_store: OTPStore):
-        self.intent_store = intent_store
+        self.registration_intent_store = registration_intent_store
         self.otp_store = otp_store
         self.user_writer = user_writer
     
-    async def execute(self, verification_token: UUID , code: str) -> User:
+    def execute(self, verification_token: UUID , code: str) -> User:
         """
         Verifies the OTP and creates the new user account.
         
@@ -30,18 +33,18 @@ class VerifyRegistrationWithOTPUseCase:
         Raises:
             InvalidOTPError: If OTP or intent is invalid.
         """
-        intent = await self.intent_store.get(key=verification_token)
+        intent = self.registration_intent_store.get(key=verification_token)
         if intent is None:
             raise InvalidOTPError("Intent not found")
-        valid = await self.otp_store.verify(token=verification_token, code=code, purpose=OTPPurpose.REGISTRATION)
+        valid = self.otp_store.verify(token=verification_token, code=code, purpose=OTPPurpose.REGISTRATION)
         if not valid:
             raise InvalidOTPError("Invalid OTP")
-        await self.intent_store.delete(key=verification_token)
+        self.registration_intent_store.delete(key=verification_token)
         user = User(id=uuid4(),
                     identifier=intent.identifier,
                     password_hash=intent.password_hash,
                     credentials_version=intent.credentials_version)
-        user = await self.user_writer.add(user=user)
+        user = self.user_writer.add(user=user)
         return user
         
         

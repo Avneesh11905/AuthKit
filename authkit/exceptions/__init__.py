@@ -8,6 +8,7 @@ from .auth import (
     AuthError,
     NotFoundError,
     UserNotFoundError,
+    FeatureNotConfiguredError,
 )
 
 __all__ = [
@@ -17,4 +18,5 @@ __all__ = [
     "AuthError",
     "NotFoundError",
     "UserNotFoundError",
+    "FeatureNotConfiguredError",
 ]

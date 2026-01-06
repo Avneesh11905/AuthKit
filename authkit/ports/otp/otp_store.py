@@ -7,7 +7,7 @@ class OTPStore(Protocol):
     Interface for storing and verifying OTPs.
     Suggestion: save the otp using key like otp:{purpose}:{token} -> hashed(otp)
     """
-    async def store(self, token: UUID, code: str, purpose: OTPPurpose) -> None: 
+    def store(self, token: UUID, code: str, purpose: OTPPurpose) -> None: 
         """
         Stores an OTP for verification.
         
@@ -18,7 +18,7 @@ class OTPStore(Protocol):
         """
         ...
 
-    async def verify(self, token: UUID, code: str, purpose: OTPPurpose) -> bool: 
+    def verify(self, token: UUID, code: str, purpose: OTPPurpose) -> bool: 
         """
         Verifies an OTP against the stored value.
         

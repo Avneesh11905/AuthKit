@@ -6,7 +6,7 @@ class UserIDIntentStore(Protocol):
     Interface for storing temporary intents mapped to User IDs.
     Suggestion: save the otp using key like intent:{intent.id}
     """
-    async def store(self, intent: UUID) -> UUID: 
+    def store(self, intent: UUID) -> UUID: 
         """
         Stores a user ID as an intent.
         
@@ -18,7 +18,7 @@ class UserIDIntentStore(Protocol):
         """
         ...
         
-    async def get(self, key: UUID) -> UUID | None: 
+    def get(self, key: UUID) -> UUID | None: 
         """
         Retrieves a user ID by its intent key.
         
@@ -30,7 +30,7 @@ class UserIDIntentStore(Protocol):
         """
         ...
         
-    async def delete(self, key: UUID) -> None: 
+    def delete(self, key: UUID) -> None: 
         """
         Deletes an intent.
         

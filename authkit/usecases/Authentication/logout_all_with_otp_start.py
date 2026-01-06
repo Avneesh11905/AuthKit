@@ -1,5 +1,5 @@
 from authkit.ports.user_repo_cqrs import UserReaderRepository
-from authkit.ports.token_service import TokenService
+from authkit.ports.session_service import SessionService
 from authkit.ports.otp.otp_store import OTPStore    
 from authkit.ports.otp.otp_manager import OTPManager
 from authkit.ports.intents.user_id_intent_store import UserIDIntentStore 
@@ -7,24 +7,27 @@ from authkit.domain import OTPPurpose
 from authkit.exceptions.auth import   InvalidCredentialsError
 from uuid import  UUID
 
+from authkit.core import Registry
+
+@Registry.register("logout_all_otp_start")
 class StartLogoutAllWithOTPUseCase:
     """
     Use case to initiate global logout using OTP.
     """
     def __init__(self,
                  user_reader: UserReaderRepository,
-                 token_service: TokenService,
+                 session_service: SessionService,
                  intent_store: UserIDIntentStore,
                  otp_store: OTPStore,
                  otp_manager: OTPManager,
                  ):
         self.user_reader = user_reader
-        self.token_service = token_service
+        self.session_service = session_service
         self.otp_store = otp_store
         self.otp_manager = otp_manager
         self.intent_store = intent_store
 
-    async def execute(self, user_id: UUID) -> UUID:
+    def execute(self, user_id: UUID) -> UUID:
         """
         Starts the global logout flow by sending an OTP.
         
@@ -37,15 +40,15 @@ class StartLogoutAllWithOTPUseCase:
         Raises:
             InvalidCredentialsError: If the user is not found.
         """
-        user = await self.user_reader.get_by_id(user_id)
+        user = self.user_reader.get_by_id(user_id)
         if not user:
             raise InvalidCredentialsError("User not found")
-        logout_token = await self.intent_store.store(intent=user.id)
-        otp = await self.otp_manager.generate()
-        await self.otp_store.store(token=logout_token, 
+        logout_token = self.intent_store.store(intent=user.id)
+        otp = self.otp_manager.generate()
+        self.otp_store.store(token=logout_token, 
                                    code=otp, 
                                    purpose=OTPPurpose.MFA)
-        await self.otp_manager.send(identifier=user.identifier, 
+        self.otp_manager.send(identifier=user.identifier, 
                                     code=otp, 
                                     purpose=OTPPurpose.MFA)
         return logout_token

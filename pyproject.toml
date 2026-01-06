@@ -1,6 +1,8 @@
 [project]
 name = "authkit"
 version = "0.1.0"
+description = "Secure, type-safe authentication for Python apps. Features MFA, password management, and a flexible, developer-friendly Facade API."
+requires-python = ">=3.10"
 
 [build-system]
 requires = ["setuptools"]

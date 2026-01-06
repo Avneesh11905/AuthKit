@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from uuid import UUID
-
+from datetime import datetime
 @dataclass
 class User:
     """
@@ -16,5 +16,4 @@ class User:
     identifier: str
     password_hash: str
     credentials_version: int
-
-
+    last_login: datetime | None = None
