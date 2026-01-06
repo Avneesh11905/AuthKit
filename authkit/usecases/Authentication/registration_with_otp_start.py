@@ -5,7 +5,8 @@ from authkit.ports.user_repo_cqrs import UserReaderRepository
 from authkit.ports.passwd_manager import PasswordManager
 from authkit.exceptions.auth import ConflictError
 from authkit.domain import  RegistrationIntent
-from uuid import UUID, uuid4
+from uuid import UUID
+from typing import Any
 
 from authkit.core import Registry
 
@@ -27,13 +28,14 @@ class StartRegistrationWithOTPUseCase:
         self.otp_manager = otp_manager
         self.otp_purpose = OTPPurpose.REGISTRATION
 
-    def execute(self, identifier: str, password: str) -> UUID:
+    def execute(self, identifier: str, password: str, metadata: dict[str, Any] | None = None) -> UUID:
         """
         Validates new user details and sends a verification OTP.
         
         Args:
             identifier: The user's identifier.
             password: The user's password.
+            metadata: Optional dictionary for additional user data.
             
         Returns:
             A UUID token representing the registration intent.
@@ -49,7 +51,8 @@ class StartRegistrationWithOTPUseCase:
         intent = RegistrationIntent(
             identifier=identifier,
             password_hash=hashed_password,
-            credentials_version=0
+            credentials_version=0,
+            metadata=metadata or {}
         )
         
         # Store intent to get the token (ID)

@@ -43,7 +43,8 @@ class VerifyRegistrationWithOTPUseCase:
         user = User(id=uuid4(),
                     identifier=intent.identifier,
                     password_hash=intent.password_hash,
-                    credentials_version=intent.credentials_version)
+                    credentials_version=intent.credentials_version,
+                    metadata=intent.metadata)
         user = self.user_writer.add(user=user)
         return user
         

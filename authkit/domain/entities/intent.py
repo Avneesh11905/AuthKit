@@ -1,5 +1,6 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from uuid import UUID
+from typing import Any
 
 @dataclass
 class RegistrationIntent:
@@ -9,3 +10,4 @@ class RegistrationIntent:
     identifier: str
     password_hash: str
     credentials_version: int
+    metadata: dict[str, Any] = field(default_factory=dict)
