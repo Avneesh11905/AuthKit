@@ -114,6 +114,12 @@ auth = MyAuthKit(...)
 auth.greet_user.execute("alice@example.com") # IDE knows about this!
 ```
 
+## 🏃 Running Examples
+
+We provide runnable examples in the `examples/` directory.
+
+For a detailed guide on all available demos, please read the **[Examples Documentation](examples/README.md)**.
+
 ## 🧪 Development
 
 1.  **Clone the repository**:
@@ -125,15 +131,10 @@ auth.greet_user.execute("alice@example.com") # IDE knows about this!
 2.  **Install dependencies**:
     ```bash
     pip install .
-    pip install pytest mypy
+    pip install mypy
     ```
 
-3.  **Run Tests**:
+3.  **Static Analysis**:
     ```bash
-    pytest tests/
-    ```
-
-4.  **Static Analysis**:
-    ```bash
-    mypy authkit/ examples/ tests/
+    mypy authkit/ examples/
     ```
