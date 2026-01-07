@@ -54,6 +54,6 @@ class VerifyLoginWithOTPUseCase:
         if not user:
             raise InvalidOTPError("User not found")
         auth_token = self.session_service.issue(user_id=user.id,
-                                                    credential_version=user.credentials_version)
+                                                    creds_version=user.credentials_version)
         self.user_writer.update_last_login(user_id=user.id)
         return auth_token

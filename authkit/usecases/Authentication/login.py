@@ -42,6 +42,6 @@ class LoginUseCase:
         valid = self.password_manager.verify(password, user.password_hash)
         if not valid:
             raise InvalidCredentialsError("Invalid password")
-        token = self.session_service.issue(user.id, user.credentials_version)
-        self.user_writer.update_last_login(user.id)
+        token = self.session_service.issue(user_id=user.id, creds_version=user.credentials_version)
+        self.user_writer.update_last_login(user_id=user.id)
         return token

@@ -11,10 +11,8 @@ class AuthSession(Protocol):
         credentials_version (int): The version of credentials this session is tied to.
         revoked (bool): Whether this session has been explicitly revoked.
     """
-    token: str
     session_id: UUID
-    credentials_version: int
-    revoked: bool = False
+    session_token: str
 
 class AuthSessionService(Protocol):
     """
@@ -25,13 +23,13 @@ class AuthSessionService(Protocol):
     usually requires some state mechanism (like blacklisting or versioning).
     """
 
-    def issue(self, user_id: UUID, credential_version: int) -> AuthSession: 
+    def issue(self, user_id: UUID, creds_version: int) -> AuthSession: 
         """
         Generates and issues a new authentication token for a user.
         
         Args:
             user_id (UUID): The unique ID of the user.
-            credential_version (int): The current security version of the user's credentials.
+            creds_version (int): The current security version of the user's credentials.
                                       Used to invalidate old tokens when passwords change.
             
         Returns:
@@ -39,7 +37,7 @@ class AuthSessionService(Protocol):
         """
         ...
         
-    def verify(self, token: str, creds_version: int) -> bool: 
+    def verify(self, session_token: str, creds_version: int) -> bool: 
         """
         Validates an incoming token string.
         
