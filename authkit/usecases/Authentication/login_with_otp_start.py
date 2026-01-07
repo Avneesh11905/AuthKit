@@ -56,5 +56,6 @@ class StartLoginWithOTPUseCase:
                                    purpose=OTPPurpose.MFA)
         self.otp_manager.send(identifier=identifier,
                                     code=otp,
+                                    metadata=user.metadata,
                                     purpose=OTPPurpose.MFA)
         return verification_token

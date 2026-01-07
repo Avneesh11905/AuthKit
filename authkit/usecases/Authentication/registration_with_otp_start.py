@@ -43,7 +43,8 @@ class StartRegistrationWithOTPUseCase:
         Raises:
             ConflictError: If the user already exists.
         """
-        if self.user_reader.get_by_identifier(identifier=identifier):
+        user = self.user_reader.get_by_identifier(identifier=identifier)
+        if user is None:
             raise ConflictError("User already exists")
         hashed_password = self.password_manager.hash(password=password)
         
@@ -61,6 +62,9 @@ class StartRegistrationWithOTPUseCase:
         # Generate and store OTP
         otp_code = self.otp_manager.generate()
         self.otp_store.store(token=token, code=otp_code, purpose=self.otp_purpose)
-        self.otp_manager.send(identifier=identifier, code=otp_code, purpose=self.otp_purpose)
+        self.otp_manager.send(identifier=identifier,
+                                    code=otp_code,
+                                    metadata=user.metadata,
+                                    purpose=self.otp_purpose)
         
         return token

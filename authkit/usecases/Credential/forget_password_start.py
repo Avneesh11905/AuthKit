@@ -48,5 +48,6 @@ class StartForgetPasswordUseCase:
                                    purpose=OTPPurpose.FORGET_PASSWORD)
         self.otp_manager.send(identifier=identifier, 
                                     code=otp, 
+                                    metadata=user.metadata,
                                     purpose=OTPPurpose.FORGET_PASSWORD)
         return forget_token

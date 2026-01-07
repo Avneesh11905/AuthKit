@@ -1,4 +1,4 @@
-from typing import Protocol
+from typing import Protocol ,Any
 from authkit.domain import OTPPurpose
 
 class OTPManager(Protocol):
@@ -15,7 +15,7 @@ class OTPManager(Protocol):
         """
         ...
 
-    def send(self, identifier: str, code: str, purpose: OTPPurpose) -> None: 
+    def send(self, identifier: str, metadata: dict[str,Any],  code: str, purpose: OTPPurpose) -> None: 
         """
         Sends an OTP to a user.
         

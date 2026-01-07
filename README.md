@@ -118,7 +118,11 @@ auth.greet_user.execute("alice@example.com") # IDE knows about this!
 
 We provide runnable examples in the `examples/` directory.
 
-For a detailed guide on all available demos, please read the **[Examples Documentation](examples/README.md)**.
+- **[FastAPI + SQLModel + Redis](examples/fastapi_example/README.md)**: A complete reference implementation featuring:
+  - MFA (Email/OTP) Login & Registration.
+  - Secure Session Management (HttpOnly Cookies + Redis + SQL Persistence).
+  - Swagger UI with Bearer Token integration.
+  - CQRS Architecture (Separated Read/Write Repos).
 
 ## 🧪 Development
 

@@ -44,5 +44,6 @@ class StartDeleteAccountWithOTPUseCase:
                                    purpose=OTPPurpose.MFA)
         self.otp_manager.send(identifier=user.identifier,
                                     code=otp,
+                                    metadata=user.metadata,
                                     purpose=OTPPurpose.MFA)
         return verification_token
